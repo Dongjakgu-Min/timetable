@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:timetable/addLecture.dart';
 import 'package:timetable/timetable.dart';
 
 void main() {
@@ -44,18 +45,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+  Map<int, List<Widget>> workBlock = {
+    0: [],
+    1: [],
+    2: [],
+    3: [],
+    4: [],
+    5: [],
+    6: [],
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -65,18 +63,33 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    const defaultList = [
-      ["1", "", ""],
-      ["2", "", ""],
-    ];
-    const days = ["월", "화", "수", "목", "금"];
 
-    return const CupertinoPageScaffold(
+    return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text("시간표"),
-      ),
+          middle: const Text("시간표"),
+          trailing: CupertinoButton(
+            padding: const EdgeInsets.all(0.0),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => LectureAddScreen(
+                            workBlock: workBlock,
+                          )));
+            },
+            child: const Text(
+              "추가",
+              style: TextStyle(color: Colors.blue),
+            ),
+          )),
       child: SafeArea(
-        child: Timetable(),
+        child: Column(
+          children: [
+            Timetable(
+              workBlock: workBlock,
+            ),
+          ],
+        ),
       ),
     );
   }
