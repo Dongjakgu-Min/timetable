@@ -3,10 +3,6 @@ import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:timetable/main.dart';
-import 'package:timetable/providers/lecture.dart';
-
 class Timetable extends StatefulWidget {
   const Timetable({Key? key}) : super(key: key);
 
@@ -24,36 +20,6 @@ class _TimetableState extends State<Timetable> {
     "TimeCellWidth": 20,
     "WeekDays": 5,
   };
-
-  List<Widget> _buildDay(String title, Map<int, List<Widget>> works) {
-    return [
-      SizedBox(
-        height: _tableVariables["HeaderCellHeight"],
-        child: Center(
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
-          ),
-        ),
-      ),
-      ...List.generate(5 * 2, (index) {
-        return Expanded(
-          flex: 4,
-          child: Stack(
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ..._dayWork((index / 2).round() - 1),
-                ],
-              ),
-              ...?works[(index / 2).round() - 1],
-            ],
-          ),
-        );
-      }),
-    ];
-  }
 
   List<Widget> _tableTime() {
     return [
