@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:timetable/main.dart';
+import 'package:timetable/providers/lecture.dart';
 import 'package:timetable/timetable.dart';
 
 class LectureAddScreen extends StatefulWidget {
-  const LectureAddScreen({Key? key, required this.workBlock}) : super(key: key);
-  final Map<int, List<Widget>> workBlock;
+  const LectureAddScreen({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _LectureAddScreenState();
@@ -14,6 +16,9 @@ class LectureAddScreen extends StatefulWidget {
 class _LectureAddScreenState extends State<LectureAddScreen> {
   @override
   Widget build(BuildContext context) {
+    MyHomePageState? parentState =
+        context.findAncestorStateOfType<MyHomePageState>();
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text("시간표"),
@@ -37,10 +42,8 @@ class _LectureAddScreenState extends State<LectureAddScreen> {
               flex: 1,
               child: Container(
                 width: double.infinity,
-                child: SingleChildScrollView(
-                  child: Timetable(
-                    workBlock: widget.workBlock,
-                  ),
+                child: const SingleChildScrollView(
+                  child: Timetable(),
                 ),
               ),
             ),
@@ -81,7 +84,7 @@ class _LectureAddScreenState extends State<LectureAddScreen> {
                     child: SizedBox(
                       width: double.infinity,
                       child: CupertinoButton(
-                        onPressed: () => {},
+                        onPressed: () => {_AddLecture()},
                         color: Colors.blue,
                         child: const Text("추가"),
                       ),
@@ -109,5 +112,28 @@ class _LectureAddScreenState extends State<LectureAddScreen> {
       ),
       decoration: const BoxDecoration(),
     );
+  }
+
+  void _AddLecture() {
+    final Map<String, double> tableVariables = {
+      "CellHeight": 60,
+      "HeaderCellHeight": 20,
+      "TimeCellHeight": 20,
+      "TableLength": 10,
+      "TimeCellWidth": 20,
+      "WeekDays": 5,
+    };
+
+    context.read<Lecture>().add(
+        1,
+        Positioned(
+          top: tableVariables["TimeCellHeight"]! / 2,
+          height: tableVariables["CellHeight"]! +
+              tableVariables["CellHeight"]! * 0.5,
+          width: 100,
+          child: Container(
+            color: Colors.green,
+          ),
+        ));
   }
 }

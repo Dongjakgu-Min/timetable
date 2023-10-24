@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:timetable/addLecture.dart';
+import 'package:timetable/providers/lecture.dart';
 import 'package:timetable/timetable.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => Lecture())],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -41,20 +46,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  Map<int, List<Widget>> workBlock = {
-    0: [],
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-  };
-
+class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -73,21 +68,17 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.push(
                   context,
                   CupertinoPageRoute(
-                      builder: (context) => LectureAddScreen(
-                            workBlock: workBlock,
-                          )));
+                      builder: (context) => const LectureAddScreen()));
             },
             child: const Text(
               "추가",
               style: TextStyle(color: Colors.blue),
             ),
           )),
-      child: SafeArea(
+      child: const SafeArea(
         child: Column(
           children: [
-            Timetable(
-              workBlock: workBlock,
-            ),
+            Timetable(),
           ],
         ),
       ),
