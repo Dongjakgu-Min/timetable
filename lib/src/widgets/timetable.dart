@@ -1,8 +1,13 @@
 import 'dart:core';
-import 'dart:ffi';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:timetable/main.dart';
+import 'package:provider/provider.dart';
+import 'package:timetable/src/models/schedule_item.dart';
+import 'package:timetable/src/providers/timetable_provider.dart';
+import 'package:timetable/src/utils/table_variable.dart';
+import 'package:timetable/src/widgets/time_block.dart';
+
 class Timetable extends StatefulWidget {
   const Timetable({Key? key}) : super(key: key);
 
@@ -12,27 +17,29 @@ class Timetable extends StatefulWidget {
 
 class _TimetableState extends State<Timetable> {
   final List<String> week = ["월", "화", "수", "목", "금", "토", "일", " "];
-  final Map<String, double> _tableVariables = {
-    "CellHeight": 60,
-    "HeaderCellHeight": 20,
-    "TimeCellHeight": 20,
-    "TableLength": 10,
-    "TimeCellWidth": 20,
-    "WeekDays": 5,
-  };
+  final List<String> weekEng = [
+    'Monday',
+    'Tuseday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+    ''
+  ];
 
   List<Widget> _tableTime() {
     return [
       SizedBox(
-        height: _tableVariables["HeaderCellHeight"],
+        height: TableVariable().headerCellHeight,
         child: const Center(
           child: Text(
             " ",
-            style: TextStyle(fontSize: 13, color: Colors.black54),
+            style: TextStyle(fontSize: 13, color: Colors.black),
           ),
         ),
       ),
-      ...List.generate(_tableVariables["TableLength"]!.round() * 2, (index) {
+      ...List.generate(TableVariable().tabLength.round() * 2, (index) {
         if (index % 2 == 0) {
           return const Divider(
             height: 0,
@@ -41,10 +48,10 @@ class _TimetableState extends State<Timetable> {
         }
 
         return SizedBox(
-          height: _tableVariables["CellHeight"],
+          height: TableVariable().cellHeight,
           child: Text(
             (index / 2).round().toString(),
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
+            style: const TextStyle(fontSize: 13, color: Colors.black),
           ),
         );
       })
@@ -54,12 +61,12 @@ class _TimetableState extends State<Timetable> {
   List<Widget> _dayWork(int weekIdx) {
     return [
       Container(
-        height: _tableVariables["HeaderCellHeight"],
+        height: TableVariable().headerCellHeight,
         decoration: const BoxDecoration(
           border: Border(
             left: BorderSide(
               color: Colors.grey,
-              width: 0,
+              width: 1,
             ),
           ),
         ),
@@ -70,7 +77,7 @@ class _TimetableState extends State<Timetable> {
           ),
         ),
       ),
-      ...List.generate(_tableVariables["TableLength"]!.round() * 2, (index) {
+      ...List.generate(TableVariable().tabLength.round() * 2, (index) {
         if (index % 2 == 0) {
           return const Divider(
             height: 0,
@@ -78,12 +85,12 @@ class _TimetableState extends State<Timetable> {
           );
         }
         return Container(
-          height: _tableVariables["CellHeight"],
+          height: TableVariable().cellHeight,
           decoration: const BoxDecoration(
             border: Border(
               left: BorderSide(
                 color: Colors.grey,
-                width: 0,
+                width: 1,
               ),
             ),
           ),
@@ -113,10 +120,26 @@ class _TimetableState extends State<Timetable> {
             ),
           ),
           ...List.generate(
-            _tableVariables["WeekDays"]!.round(),
+            TableVariable().weekDays.round(),
             (index) => Expanded(
-              child: Column(
-                children: [..._dayWork(index)],
+              child: Stack(
+                children: [
+                  Column(
+                    children: [..._dayWork(index)],
+                  ),
+                  ...context
+                      .watch<TimetableProvider>()
+                      .getScheduleForDay(weekEng[index])!
+                      .map((elem) => TimeBlock(
+                            day: weekEng[index],
+                            lectureName: elem.subject,
+                            professor: elem.professor,
+                            startTime: elem.startTime,
+                            endTime: elem.endTime,
+                            location: elem.location,
+                          ))
+                      .toList()
+                ],
               ),
             ),
           ),
